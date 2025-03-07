@@ -9,18 +9,18 @@ const secret = "nepaw7eakf3ddb87v6xbezs9dtaq8rjaxwhsypjwb6ewmvd6apb9mfmczpwy3rrm
 
 const client = new StreamClient(apiKey, secret);
 
-const fetchStreamToken = async (userId) => {
-    const response = await fetch(
-        "https://pronto.getstream.io/api/auth/create-token?" +
-        new URLSearchParams({
-            api_key: apiKey,
-            user_id: userId,
-        })
-    );
+// const fetchStreamToken = async (userId) => {
+//     const response = await fetch(
+//         "https://pronto.getstream.io/api/auth/create-token?" +
+//         new URLSearchParams({
+//             api_key: apiKey,
+//             user_id: userId,
+//         })
+//     );
 
-    const data = await response.json();
-    return data.token;
-};
+//     const data = await response.json();
+//     return data.token;
+// };
 
 app.post("/initialize-stream", async (req, res) => {
     try {
@@ -37,7 +37,7 @@ app.post("/initialize-stream", async (req, res) => {
         };
         await client.upsertUsers([newUser]);
 
-        const token = await fetchStreamToken(userId);
+        const token = await client.generateUserToken(userId);
 
         const callType = "default";
         const call = client.video.call(callType, callId);
