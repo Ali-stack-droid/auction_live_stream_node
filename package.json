@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@stream-io/node-sdk": "^0.4.17",
+    "@stream-io/video-client": "^1.18.3",
+    "axios": "^1.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "getstream": "^8.6.1",
+    "mssql": "^11.0.1",
+    "stream-chat": "^8.57.5"
+  }
+}
