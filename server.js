@@ -162,7 +162,7 @@ async function deleteRoom(socket, { roomName }) {
       console.error("❌ API Error:", error.response ? error.response.data : error.message);
       logAndEmit(socket, "delete-room-api-error", "Failed to post bids to API.");
     }
-  } 
+  }
 
   if (roomMembers.has(roomName)) {
     roomMembers.get(roomName).forEach((clientId) => {
@@ -219,53 +219,55 @@ function removeUser(socket) {
 
 app.post("/initialize-stream", async (req, res) => {
   try {
-      const { userId, callId, lotID } = req.body;
-      if (!userId && !callId && !lotID) {
-          return res.status(400).json({ error: `${!userId && `User ID`}${!callId && `Call ID`}${!lotID && `Lot ID`} are required` });
+    const { userId, callId, lotID } = req.body;
+    if (!userId && !callId && !lotID) {
+      return res.status(400).json({ error: `${!userId && `User ID`}${!callId && `Call ID`}${!lotID && `Lot ID`} are required` });
+    }
+
+    const newUser = {
+      id: userId,
+      role: "admin",
+      custom: { color: "red" },
+      name: "Admin",
+    };
+    await client.upsertUsers([newUser]);
+
+    const callType = "default";
+    const call = client.video.call(callType, callId);
+    const callCreated = await call.create({
+      data: {
+        created_by_id: userId,
+        members: [{ user_id: userId, role: "admin" }],
+        custom: { color: "blue" },
+      },
+    });
+    const vailidity = 60 * 60;
+    const token = client.generateUserToken({ user_id: userId, validity_in_seconds: vailidity });
+
+    let payload = {
+      LotId: lotID,
+      Token: token,
+      CallId: callId,
+      UserId: userId
+    }
+
+    const response = axios.post(`https://auction.sttoro.com/api/stream/create`, payload, {
+
+      headers: {
+        "Content-Type": "application/json",
       }
-
-      const newUser = {
-          id: userId,
-          role: "admin",
-          custom: { color: "red" },
-          name: "Admin",
-      };
-      await client.upsertUsers([newUser]);
-
-
-      const callType = "default";
-      const call = client.video.call(callType, callId);
-      const callCreated = await call.create({
-          data: {
-              created_by_id: userId,
-              members: [{ user_id: userId, role: "admin" }],
-              custom: { color: "blue" },
-          },
-      });
-      const vailidity = 60 * 60;
-      const token = client.generateUserToken({ user_id: userId, validity_in_seconds: vailidity });
-
-      let payload = {
-          LotId: lotID,
-          Token: token,
-          CallId: callId,
-          UserId: userId
-      }
-
-      const response = axios.post(`https://auction.sttoro.com/api/stream/create`, payload, {
-
-          headers: {
-              "Content-Type": "application/json",
-          }
-      })
-      console.log("stream/create api response ", JSON.stringify(response, null, 2));
-      res.json({ token, callId, callType, callCreated });
+    })
+    console.log("stream/create api response ", JSON.stringify(response, null, 2));
+    res.json({ token, callId, callType, callCreated });
   } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ error: "Failed to initialize stream" });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Failed to initialize stream" });
   }
 });
 
+app.all("*", (req, res) => {
+  res.status(404).send("<h1>404! Page not found</h1>");
+});
 
 server.listen(8181, () => {
   console.log("✅ Socket.io server started on http://localhost:8181");
