@@ -269,6 +269,10 @@ app.all("*", (req, res) => {
   res.status(404).send("<h1>404! Page not found</h1>");
 });
 
+app.get("/testing", (req, res) => {
+  res.status(404).send("<h1>404! Page not found</h1>");
+});
+
 server.listen(8181, () => {
   console.log("✅ Socket.io server started on http://localhost:8181");
 });
