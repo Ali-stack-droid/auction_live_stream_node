@@ -3,6 +3,7 @@
     "@stream-io/node-sdk": "^0.4.17",
     "@stream-io/video-client": "^1.18.3",
     "axios": "^1.8.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "getstream": "^8.6.1",
