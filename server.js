@@ -251,7 +251,7 @@ app.post("/initialize-stream", async (req, res) => {
       UserId: userId
     }
 
-    const response = axios.post(`https://auction.sttoro.com/api/stream/create`, payload, {
+    const response = await axios.post(`https://auction.sttoro.com/api/stream/create`, payload, {
 
       headers: {
         "Content-Type": "application/json",
