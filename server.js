@@ -259,7 +259,6 @@ app.post("/initialize-stream", async (req, res) => {
         "Content-Type": "application/json",
       }
     })
-    console.log("stream/create api response ", JSON.stringify(response, null, 2));
     res.json({ token, callId, callType, callCreated });
   } catch (error) {
     console.error("Error:", error);
