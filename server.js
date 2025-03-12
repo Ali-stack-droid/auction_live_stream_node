@@ -8,10 +8,9 @@ const cors = require("cors");
 
 
 const { StreamClient } = require("@stream-io/node-sdk");
-const { URLSearchParams } = require("url");
 
 const app = express();
-app.use(express.json());
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -220,14 +219,6 @@ function removeUser(socket) {
   }
 }
 
-  const { token } = await fetch(
-    "https://pronto.getstream.io/api/auth/create-token?" +
-    new URLSearchParams({
-      api_key: apiKey,
-      user_id: userId
-    })
-  ).then((res) => res.json());
-
 app.post("/initialize-stream", async (req, res) => {
   try {
     const { userId, callId, lotID } = req.body;
@@ -242,9 +233,6 @@ app.post("/initialize-stream", async (req, res) => {
       name: "Admin",
     };
     await client.upsertUsers([newUser]);
-    const vailidity = 60 * 60;
-   
-    // const token = client.generateUserToken({ user_id: userId, validity_in_seconds: vailidity });
 
     const callType = "default";
     const call = client.video.call(callType, callId);
@@ -255,6 +243,8 @@ app.post("/initialize-stream", async (req, res) => {
         custom: { color: "blue" },
       },
     });
+    const vailidity = 60 * 60;
+    const token = client.generateUserToken({ user_id: userId, validity_in_seconds: vailidity });
 
     let payload = {
       LotId: lotID,
@@ -269,7 +259,6 @@ app.post("/initialize-stream", async (req, res) => {
         "Content-Type": "application/json",
       }
     })
-   
     res.json({ token, callId, callType, callCreated });
   } catch (error) {
     console.error("Error:", error);
