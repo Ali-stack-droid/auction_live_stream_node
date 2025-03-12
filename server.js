@@ -220,6 +220,14 @@ function removeUser(socket) {
   }
 }
 
+  const { token } = await fetch(
+    "https://pronto.getstream.io/api/auth/create-token?" +
+    new URLSearchParams({
+      api_key: apiKey,
+      user_id: userId
+    })
+  ).then((res) => res.json());
+
 app.post("/initialize-stream", async (req, res) => {
   try {
     const { userId, callId, lotID } = req.body;
@@ -235,16 +243,7 @@ app.post("/initialize-stream", async (req, res) => {
     };
     await client.upsertUsers([newUser]);
     const vailidity = 60 * 60;
-    const tokenProvider = async () => {
-      const { token } = await fetch(
-        "https://pronto.getstream.io/api/auth/create-token?" +
-        new URLSearchParams({
-          api_key: apiKey,
-          user_id: userId
-        })
-      ).then((res) => res.json());
-      return token;
-    };
+   
     // const token = client.generateUserToken({ user_id: userId, validity_in_seconds: vailidity });
 
     const callType = "default";
@@ -259,7 +258,7 @@ app.post("/initialize-stream", async (req, res) => {
 
     let payload = {
       LotId: lotID,
-      Token: tokenProvider(),
+      Token: token,
       CallId: callId,
       UserId: userId
     }
@@ -270,8 +269,8 @@ app.post("/initialize-stream", async (req, res) => {
         "Content-Type": "application/json",
       }
     })
-    const callToken = tokenProvider()
-    res.json({ callToken, callId, callType, callCreated });
+   
+    res.json({ token, callId, callType, callCreated });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Failed to initialize stream" });
