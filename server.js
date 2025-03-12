@@ -8,6 +8,7 @@ const cors = require("cors");
 
 
 const { StreamClient } = require("@stream-io/node-sdk");
+const { URLSearchParams } = require("url");
 
 const app = express();
 app.use(express.json());
